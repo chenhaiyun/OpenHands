@@ -8,6 +8,7 @@ import {
 export default [
   layout("routes/_oh/route.tsx", [
     index("routes/_oh._index/route.tsx"),
+    route("signin", "routes/_oh.signin/route.tsx"),
     route("settings", "routes/settings.tsx", [
       index("routes/account-settings.tsx"),
       route("billing", "routes/billing.tsx"),

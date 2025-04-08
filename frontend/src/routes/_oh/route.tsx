@@ -81,6 +81,8 @@ export default function MainApp() {
 
   const [consentFormIsOpen, setConsentFormIsOpen] = React.useState(false);
 
+  const auth = useAuth();
+
   React.useEffect(() => {
     if (settings?.LANGUAGE) {
       i18n.changeLanguage(settings.LANGUAGE);
@@ -114,12 +116,19 @@ export default function MainApp() {
     }
   }, [error?.status, pathname, isFetching]);
 
+  React.useEffect(() => {
+    // Handle signin callback
+    if (pathname === "/signin" && searchParams.get("code")) {
+      // Redirect to home page after successful signin
+      navigate("/", { replace: true });
+    }
+  }, [pathname, searchParams]);
+
   const userIsAuthed = !!isAuthed && !authError;
   const renderWaitlistModal =
     !isFetchingAuth && !userIsAuthed && config.data?.APP_MODE === "saas";
 
-  const auth = useAuth();
-  if (auth.isLoading) {
+  if (auth.isLoading || auth.activeNavigator) {
     return (
       <div className="flex justify-center items-center h-screen bg-black">
         <div className="loader text-gray-300" />
@@ -128,7 +137,8 @@ export default function MainApp() {
   }
 
   if (auth.error) {
-    return <div>error</div>;
+    console.error("Auth error:", auth.error);
+    return <div>Authentication error</div>;
   }
 
   if (auth.isAuthenticated) {
