@@ -12,9 +12,11 @@ import { Provider } from "react-redux";
 import posthog from "posthog-js";
 import "./i18n";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { WebStorageStateStore } from "oidc-client-ts";
+import { AuthProvider } from "react-oidc-context";
 import store from "./store";
 import { useConfig } from "./hooks/query/use-config";
-import { AuthProvider } from "./context/auth-context";
+import { AuthProvider as TokenAuthProvider } from "./context/auth-context";
 import { queryClientConfig } from "./query-client-config";
 
 function PosthogInit() {
@@ -47,17 +49,35 @@ async function prepareApp() {
 
 export const queryClient = new QueryClient(queryClientConfig);
 
+const oidcConfig = {
+  userStore: new WebStorageStateStore({ store: window.localStorage }),
+  scope: import.meta.env.VITE_OIDC_SCOPE,
+  automaticSilentRenew: true,
+  authority: import.meta.env.VITE_OIDC_AUTHORITY,
+  client_id: import.meta.env.VITE_OIDC_CLIENT_ID,
+  redirect_uri: import.meta.env.VITE_OIDC_REDIRECT_URI,
+};
+
 prepareApp().then(() =>
   startTransition(() => {
     hydrateRoot(
       document,
       <StrictMode>
         <Provider store={store}>
-          <AuthProvider>
-            <QueryClientProvider client={queryClient}>
-              <HydratedRouter />
-              <PosthogInit />
-            </QueryClientProvider>
+          <AuthProvider
+            userStore={oidcConfig.userStore}
+            scope={oidcConfig.scope}
+            automaticSilentRenew={oidcConfig.automaticSilentRenew}
+            authority={oidcConfig.authority}
+            client_id={oidcConfig.client_id}
+            redirect_uri={oidcConfig.redirect_uri}
+          >
+            <TokenAuthProvider>
+              <QueryClientProvider client={queryClient}>
+                <HydratedRouter />
+                <PosthogInit />
+              </QueryClientProvider>
+            </TokenAuthProvider>
           </AuthProvider>
         </Provider>
       </StrictMode>,
