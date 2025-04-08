@@ -84,6 +84,12 @@ export default function MainApp() {
   const auth = useAuth();
 
   React.useEffect(() => {
+    if (!auth.isLoading && !auth.isAuthenticated && pathname !== "/signin") {
+      auth.signinRedirect();
+    }
+  }, [auth.isLoading, auth.isAuthenticated, pathname]);
+
+  React.useEffect(() => {
     if (settings?.LANGUAGE) {
       i18n.changeLanguage(settings.LANGUAGE);
     }
