@@ -254,14 +254,25 @@ function AccountSettings() {
               )}
 
               {llmConfigMode === "advanced" && !shouldHandleSpecialSaasCase && (
-                <SettingsInput
+                <SettingsDropdownInput
                   testId="llm-custom-model-input"
                   name="llm-custom-model-input"
                   label={t(I18nKey.SETTINGS$CUSTOM_MODEL)}
-                  defaultValue={settings.LLM_MODEL}
-                  placeholder="litellm_proxy/claude-3.5-sonnet-v2"
-                  type="text"
-                  className="w-[680px]"
+                  items={[
+                    {
+                      key: "litellm_proxy/claude-3.5-sonnet-v2",
+                      label: "litellm_proxy/claude-3.5-sonnet-v2",
+                    },
+                    {
+                      key: "litellm_proxy/claude-3.7-sonnet-v1",
+                      label: "litellm_proxy/claude-3.7-sonnet-v1",
+                    },
+                    {
+                      key: "litellm_proxy/deepseek-r1",
+                      label: "litellm_proxy/deepseek-r1",
+                    },
+                  ]}
+                  defaultSelectedKey={settings.LLM_MODEL}
                 />
               )}
               {llmConfigMode === "advanced" && !shouldHandleSpecialSaasCase && (
