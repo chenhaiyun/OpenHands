@@ -50,6 +50,8 @@ export const useSaveSettings = () => {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["settings"] });
+      // Force an immediate refetch
+      await queryClient.refetchQueries({ queryKey: ["settings"] });
     },
     meta: {
       disableToast: true,

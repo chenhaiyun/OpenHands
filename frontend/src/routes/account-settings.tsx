@@ -256,7 +256,7 @@ function AccountSettings() {
               {llmConfigMode === "advanced" && !shouldHandleSpecialSaasCase && (
                 <SettingsDropdownInput
                   testId="llm-custom-model-dropdown"
-                  name="llm-custom-model-dropdown"
+                  name="llm-custom-model-input"
                   label={t(I18nKey.SETTINGS$CUSTOM_MODEL)}
                   items={[
                     {
