@@ -8,6 +8,7 @@ import {
   useSearchParams,
 } from "react-router";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "react-oidc-context";
 import { I18nKey } from "#/i18n/declaration";
 import i18n from "#/i18n";
 import { useGitHubAuthUrl } from "#/hooks/use-github-auth-url";
@@ -21,7 +22,6 @@ import { useMigrateUserConsent } from "#/hooks/use-migrate-user-consent";
 import { useBalance } from "#/hooks/query/use-balance";
 import { SetupPaymentModal } from "#/components/features/payment/setup-payment-modal";
 import { displaySuccessToast } from "#/utils/custom-toast-handlers";
-import { useAuth } from "react-oidc-context";
 
 export function ErrorBoundary() {
   const error = useRouteError();
@@ -172,9 +172,9 @@ export default function MainApp() {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Welcome to OpenHands
           </h1>
-          <p className="mt-4 text-gray-600">Your AI-powered coding companion</p>
+          {/* <p className="mt-4 text-gray-600">Your AI-powered coding companion</p> */}
         </div>
-        <div className="mt-10">
+        {/* <div className="mt-10">
           <button
             type="button"
             onClick={() => {
@@ -186,7 +186,7 @@ export default function MainApp() {
           >
             Sign in to Get Started
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );
