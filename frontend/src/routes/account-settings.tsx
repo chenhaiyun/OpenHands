@@ -29,6 +29,7 @@ import {
 } from "#/utils/custom-toast-handlers";
 import { ProviderOptions } from "#/types/settings";
 import { useAuth } from "#/context/auth-context";
+import { LLM_MODEL_OPTIONS } from "#/utils/constants";
 
 // Define REMOTE_RUNTIME_OPTIONS for testing
 const REMOTE_RUNTIME_OPTIONS = [
@@ -258,20 +259,7 @@ function AccountSettings() {
                   testId="llm-custom-model-input"
                   name="llm-custom-model-input"
                   label={t(I18nKey.SETTINGS$CUSTOM_MODEL)}
-                  items={[
-                    {
-                      key: "litellm_proxy/claude-3.5-sonnet-v2",
-                      label: "litellm_proxy/claude-3.5-sonnet-v2",
-                    },
-                    {
-                      key: "litellm_proxy/claude-3.7-sonnet-v1",
-                      label: "litellm_proxy/claude-3.7-sonnet-v1",
-                    },
-                    {
-                      key: "litellm_proxy/deepseek-r1",
-                      label: "litellm_proxy/deepseek-r1",
-                    },
-                  ]}
+                  items={LLM_MODEL_OPTIONS}
                   defaultSelectedKey={settings.LLM_MODEL}
                 />
               )}
