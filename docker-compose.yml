@@ -1,4 +1,3 @@
-
 services:
   openhands:
     build:
@@ -18,6 +17,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ~/.openhands-state:/.openhands-state
       - ${WORKSPACE_BASE:-$PWD/workspace}:/opt/workspace_base
+      - ./config.toml:/app/config.toml
     pull_policy: build
     stdin_open: true
     tty: true
