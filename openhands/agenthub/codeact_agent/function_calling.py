@@ -17,9 +17,11 @@ from openhands.agenthub.codeact_agent.tools import (
     LLMBasedFileEditTool,
     ThinkTool,
     WebReadTool,
+    QuipReadTool,
     create_cmd_run_tool,
     create_str_replace_editor_tool,
 )
+from openhands.agenthub.codeact_agent.tools.quip_read import _read_quip_spreadsheet
 from openhands.core.exceptions import (
     FunctionCallNotExistsError,
     FunctionCallValidationError,
@@ -197,6 +199,28 @@ def response_to_actions(response: ModelResponse) -> list[Action]:
                 action = BrowseURLAction(url=arguments['url'])
 
             # ================================================
+            # QuipReadTool
+            # ================================================
+            elif tool_call.function.name == QuipReadTool['function']['name']:
+                if 'thread_id' not in arguments:
+                    raise FunctionCallValidationError(
+                        f'Missing required argument "thread_id" in tool call {tool_call.function.name}'
+                    )
+                result = _read_quip_spreadsheet(
+                    thread_id=arguments['thread_id'],
+                    sheet_name=arguments.get('sheet_name')
+                )
+                content = f"CSV Content:\n{result['csv_content']}\n\nMetadata:\n" + \
+                         f"Rows: {result['metadata']['rows']}\n" + \
+                         f"Columns: {result['metadata']['columns']}\n" + \
+                         f"Sheet Name: {result['metadata']['sheet_name']}\n" + \
+                         f"Title: {result['metadata']['title']}"
+                action = MessageAction(
+                    content=content,
+                    wait_for_response=False
+                )
+
+            # ================================================
             # McpAction (MCP)
             # ================================================
             elif tool_call.function.name.endswith(MCPClientTool.postfix()):
@@ -258,6 +282,7 @@ def get_tools(
         create_cmd_run_tool(use_simplified_description=use_simplified_tool_desc),
         ThinkTool,
         FinishTool,
+        QuipReadTool,
     ]
     if enable_browsing:
         tools.append(WebReadTool)
