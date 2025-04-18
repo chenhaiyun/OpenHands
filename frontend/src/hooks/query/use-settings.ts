@@ -23,6 +23,9 @@ const getSettingsQueryFn = async () => {
     USER_CONSENTS_TO_ANALYTICS: apiSettings.user_consents_to_analytics,
     PROVIDER_TOKENS: apiSettings.provider_tokens,
     IS_NEW_USER: false,
+    QUIP_BASE_URL: apiSettings.quip_base_url,
+    QUIP_ACCESS_TOKEN: apiSettings.quip_access_token,
+    QUIP_OUTPUT_FILE_PATH: apiSettings.quip_output_file_path,
   };
 };
 

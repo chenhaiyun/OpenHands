@@ -20,6 +20,9 @@ export const DEFAULT_SETTINGS: Settings = {
     gitlab: "",
   },
   IS_NEW_USER: true,
+  QUIP_BASE_URL: "",
+  QUIP_ACCESS_TOKEN: null,
+  QUIP_OUTPUT_FILE_PATH: "",
 };
 
 /**

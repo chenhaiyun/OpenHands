@@ -35,6 +35,9 @@ class Settings(BaseModel):
     user_consents_to_analytics: bool | None = None
     sandbox_base_container_image: str | None = None
     sandbox_runtime_container_image: str | None = None
+    quip_base_url: str | None = None
+    quip_access_token: str | None = None
+    quip_output_file_path: str | None = None
 
     model_config = {
         'validate_assignment': True,

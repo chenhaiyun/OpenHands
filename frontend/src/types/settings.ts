@@ -20,6 +20,9 @@ export type Settings = {
   USER_CONSENTS_TO_ANALYTICS: boolean | null;
   PROVIDER_TOKENS: Record<Provider, string>;
   IS_NEW_USER?: boolean;
+  QUIP_BASE_URL: string;
+  QUIP_ACCESS_TOKEN: string | null;
+  QUIP_OUTPUT_FILE_PATH: string;
 };
 
 export type ApiSettings = {
@@ -37,15 +40,24 @@ export type ApiSettings = {
   user_consents_to_analytics: boolean | null;
   provider_tokens: Record<Provider, string>;
   provider_tokens_set: Record<Provider, boolean>;
+  quip_base_url: string;
+  quip_access_token: string | null;
+  quip_output_file_path: string;
 };
 
 export type PostSettings = Settings & {
   provider_tokens: Record<Provider, string>;
   user_consents_to_analytics: boolean | null;
   llm_api_key?: string | null;
+  quip_base_url?: string | null;
+  quip_access_token?: string | null;
+  quip_output_file_path?: string | null;
 };
 
 export type PostApiSettings = ApiSettings & {
   provider_tokens: Record<Provider, string>;
   user_consents_to_analytics: boolean | null;
+  quip_base_url?: string | null;
+  quip_access_token?: string | null;
+  quip_output_file_path?: string | null;
 };

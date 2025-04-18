@@ -84,6 +84,8 @@ function AccountSettings() {
   const isGitLabTokenSet =
     providerTokensSet.includes(ProviderOptions.gitlab) || false;
   const isLLMKeySet = settings?.LLM_API_KEY_SET;
+  // 检查 Quip access token 是否已设置
+  const isQuipAccessTokenSet = !!(settings as any)?.quip_access_token_set;
   const isAnalyticsEnabled = settings?.USER_CONSENTS_TO_ANALYTICS;
   const isAdvancedSettingsSet = determineWhetherToToggleAdvancedSettings();
 
@@ -143,6 +145,20 @@ function AccountSettings() {
       : llmBaseUrl;
     const finalLlmApiKey = shouldHandleSpecialSaasCase ? undefined : llmApiKey;
 
+    // 获取 Quip 设置的值
+    const quipBaseUrl =
+      formData.get("quip-base-url-input")?.toString().trim() || "";
+    const quipAccessToken =
+      formData.get("quip-access-token-input")?.toString() || "";
+    const quipOutputPath =
+      formData.get("quip-output-path-input")?.toString().trim() || "";
+
+    // 处理 quip_access_token，类似于 llm_api_key 的逻辑
+    const finalQuipAccessToken =
+      quipAccessToken === "" && isQuipAccessTokenSet
+        ? undefined // 如果已设置且输入为空，则不更新
+        : quipAccessToken; // 否则使用输入值
+
     const newSettings = {
       provider_tokens:
         githubToken || gitlabToken
@@ -166,6 +182,10 @@ function AccountSettings() {
           ? Number(remoteRuntimeResourceFactor)
           : DEFAULT_SETTINGS.REMOTE_RUNTIME_RESOURCE_FACTOR,
       CONFIRMATION_MODE: confirmationModeIsEnabled,
+      // Quip 设置
+      quip_base_url: quipBaseUrl || undefined,
+      quip_access_token: finalQuipAccessToken,
+      quip_output_file_path: quipOutputPath || undefined,
     };
 
     saveSettings(newSettings, {
@@ -485,6 +505,43 @@ function AccountSettings() {
                 </BrandButton>
               </>
             )}
+          </section>
+
+          <section className="flex flex-col gap-6">
+            <h2 className="text-[28px] leading-8 tracking-[-0.02em] font-bold">
+              Quip Settings
+            </h2>
+            <SettingsInput
+              testId="quip-base-url-input"
+              name="quip-base-url-input"
+              label="Quip Base URL"
+              type="text"
+              className="w-[680px]"
+              defaultValue={settings.QUIP_BASE_URL || ""}
+              placeholder="https://platform.quip.com"
+            />
+            <SettingsInput
+              testId="quip-access-token-input"
+              name="quip-access-token-input"
+              label="Quip Access Token"
+              type="password"
+              className="w-[680px]"
+              placeholder={settings.QUIP_ACCESS_TOKEN ? "<hidden>" : ""}
+              startContent={
+                settings.QUIP_ACCESS_TOKEN && (
+                  <KeyStatusIcon isSet={!!settings.QUIP_ACCESS_TOKEN} />
+                )
+              }
+            />
+            <SettingsInput
+              testId="quip-output-path-input"
+              name="quip-output-path-input"
+              label="Output File Path"
+              type="text"
+              className="w-[680px]"
+              defaultValue={settings.QUIP_OUTPUT_FILE_PATH || ""}
+              placeholder="./workspace"
+            />
           </section>
 
           <section className="flex flex-col gap-6">
