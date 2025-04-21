@@ -46,7 +46,7 @@ async def load_settings(request: Request) -> GETSettingsModel | JSONResponse:
             provider_tokens_set=provider_tokens_set,
         )
         settings_with_token_data.llm_api_key = None
-        settings_with_token_data.quip_base_url = None
+        # settings_with_token_data.quip_access_token = None
         return settings_with_token_data
     except Exception as e:
         logger.warning(f'Invalid token: {e}')
