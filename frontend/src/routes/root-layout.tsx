@@ -60,12 +60,13 @@ export default function MainApp() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [searchParams] = useSearchParams();
-  const { t } = useTranslation();
   const { data: settings } = useSettings();
   const { error, isFetching } = useBalance();
   const { migrateUserConsent } = useMigrateUserConsent();
-  const config = useConfig();
+  const { t } = useTranslation();
   const auth = useAuth();
+
+  const config = useConfig();
   const {
     data: isAuthed,
     isFetching: isFetchingAuth,
@@ -116,7 +117,7 @@ export default function MainApp() {
       searchParams.delete("free_credits");
       navigate("/");
     }
-  }, [error?.status, pathname, isFetching, t]);
+  }, [error?.status, pathname, isFetching]);
 
   const userIsAuthed = !!isAuthed && !authError;
   const renderAuthModal =
@@ -138,18 +139,23 @@ export default function MainApp() {
     return (
       <div
         data-testid="root-layout"
-        className="bg-base p-3 h-screen md:min-w-[1024px] overflow-x-hidden flex flex-col md:flex-row gap-3"
+        className="bg-base p-3 h-screen md:min-w-[1024px] flex flex-col md:flex-row gap-3"
       >
         <Sidebar />
 
         <div
           id="root-outlet"
-          className="h-[calc(100%-50px)] md:h-full w-full relative"
+          className="h-[calc(100%-50px)] md:h-full w-full relative overflow-auto"
         >
           <Outlet />
         </div>
 
-        {renderAuthModal && <AuthModal githubAuthUrl={gitHubAuthUrl} />}
+        {renderAuthModal && (
+          <AuthModal
+            githubAuthUrl={gitHubAuthUrl}
+            appMode={config.data?.APP_MODE}
+          />
+        )}
         {config.data?.APP_MODE === "oss" && consentFormIsOpen && (
           <AnalyticsConsentFormModal
             onClose={() => {
@@ -164,30 +170,4 @@ export default function MainApp() {
       </div>
     );
   }
-
-  return (
-    <div className="flex justify-center items-center h-[100vh] bg-gradient-to-br from-blue-500/10 to-purple-500/10">
-      <div className="text-center bg-white/80 backdrop-blur-lg p-12 rounded-2xl shadow-lg transform transition-all hover:scale-105 border border-white/20">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Welcome to OpenHands
-          </h1>
-          {/* <p className="mt-4 text-gray-600">Your AI-powered coding companion</p> */}
-        </div>
-        {/* <div className="mt-10">
-          <button
-            type="button"
-            onClick={() => {
-              auth.signinRedirect();
-            }}
-            className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium
-            transform transition-all hover:shadow-lg hover:-translate-y-0.5
-            focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-          >
-            Sign in to Get Started
-          </button>
-        </div> */}
-      </div>
-    </div>
-  );
 }

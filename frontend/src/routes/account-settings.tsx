@@ -9,7 +9,6 @@ import { SettingsDropdownInput } from "#/components/features/settings/settings-d
 import { SettingsInput } from "#/components/features/settings/settings-input";
 import { SettingsSwitch } from "#/components/features/settings/settings-switch";
 import { LoadingSpinner } from "#/components/shared/loading-spinner";
-import { ModalBackdrop } from "#/components/shared/modals/modal-backdrop";
 import { ModelSelector } from "#/components/shared/modals/settings/model-selector";
 import { useSaveSettings } from "#/hooks/mutation/use-save-settings";
 import { useAIConfigOptions } from "#/hooks/query/use-ai-config-options";
@@ -96,8 +95,6 @@ function AccountSettings() {
   >(isAdvancedSettingsSet ? "advanced" : "basic");
   const [confirmationModeIsEnabled, setConfirmationModeIsEnabled] =
     React.useState(!!settings?.SECURITY_ANALYZER);
-  const [resetSettingsModalIsOpen, setResetSettingsModalIsOpen] =
-    React.useState(false);
 
   const formRef = React.useRef<HTMLFormElement>(null);
 
@@ -177,16 +174,6 @@ function AccountSettings() {
       onError: (error) => {
         const errorMessage = retrieveAxiosErrorMessage(error);
         displayErrorToast(errorMessage || t(I18nKey.ERROR$GENERIC));
-      },
-    });
-  };
-
-  const handleReset = () => {
-    saveSettings(null, {
-      onSuccess: () => {
-        displaySuccessToast(t(I18nKey.SETTINGS$RESET));
-        setResetSettingsModalIsOpen(false);
-        setLlmConfigMode("basic");
       },
     });
   };
@@ -309,6 +296,7 @@ function AccountSettings() {
                       label: agent,
                     })) || []
                   }
+                  wrapperClassName="w-[680px]"
                   defaultSelectedKey={settings.AGENT}
                   isClearable={false}
                 />
@@ -378,7 +366,7 @@ function AccountSettings() {
 
           <section className="flex flex-col gap-6">
             <h2 className="text-[28px] leading-8 tracking-[-0.02em] font-bold">
-              {t(I18nKey.SETTINGS$GITHUB_SETTINGS)}
+              {t(I18nKey.SETTINGS$GIT_SETTINGS)}
             </h2>
             {isSaas && hasAppSlug && (
               <Link
@@ -501,6 +489,7 @@ function AccountSettings() {
                 label: language.label,
               }))}
               defaultSelectedKey={settings.LANGUAGE}
+              wrapperClassName="w-[680px]"
               isClearable={false}
             />
 
@@ -526,13 +515,6 @@ function AccountSettings() {
       <footer className="flex gap-6 p-6 justify-end border-t border-t-tertiary">
         <BrandButton
           type="button"
-          variant="secondary"
-          onClick={() => setResetSettingsModalIsOpen(true)}
-        >
-          {t(I18nKey.BUTTON$RESET_TO_DEFAULTS)}
-        </BrandButton>
-        <BrandButton
-          type="button"
           variant="primary"
           onClick={() => {
             formRef.current?.requestSubmit();
@@ -541,40 +523,6 @@ function AccountSettings() {
           {t(I18nKey.BUTTON$SAVE)}
         </BrandButton>
       </footer>
-
-      {resetSettingsModalIsOpen && (
-        <ModalBackdrop>
-          <div
-            data-testid="reset-modal"
-            className="bg-base-secondary p-4 rounded-xl flex flex-col gap-4 border border-tertiary"
-          >
-            <p>{t(I18nKey.SETTINGS$RESET_CONFIRMATION)}</p>
-            <div className="w-full flex gap-2">
-              <BrandButton
-                type="button"
-                variant="primary"
-                className="grow"
-                onClick={() => {
-                  handleReset();
-                }}
-              >
-                Reset
-              </BrandButton>
-
-              <BrandButton
-                type="button"
-                variant="secondary"
-                className="grow"
-                onClick={() => {
-                  setResetSettingsModalIsOpen(false);
-                }}
-              >
-                Cancel
-              </BrandButton>
-            </div>
-          </div>
-        </ModalBackdrop>
-      )}
     </>
   );
 }
