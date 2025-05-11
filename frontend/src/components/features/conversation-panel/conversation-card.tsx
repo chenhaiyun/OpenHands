@@ -285,25 +285,25 @@ export function ConversationCard({
                     <div className="flex justify-between items-center pb-2">
                       <span>{t(I18nKey.CONVERSATION$INPUT)}</span>
                       <span className="font-semibold">
-                        {metrics.usage.prompt_tokens.toLocaleString()}
+                        {metrics.usage.prompt_tokens?.toLocaleString()}
                       </span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-2 pl-4 text-sm">
                       <span className="text-neutral-400">Cache Hit:</span>
                       <span className="text-right">
-                        {metrics.usage.cache_read_tokens.toLocaleString()}
+                        {metrics.usage.cache_read_tokens?.toLocaleString()}
                       </span>
                       <span className="text-neutral-400">Cache Write:</span>
                       <span className="text-right">
-                        {metrics.usage.cache_write_tokens.toLocaleString()}
+                        {metrics.usage.cache_write_tokens?.toLocaleString()}
                       </span>
                     </div>
 
                     <div className="flex justify-between items-center border-b border-neutral-700 pb-2">
                       <span>{t(I18nKey.CONVERSATION$OUTPUT)}</span>
                       <span className="font-semibold">
-                        {metrics.usage.completion_tokens.toLocaleString()}
+                        {metrics.usage.completion_tokens?.toLocaleString()}
                       </span>
                     </div>
 
@@ -315,7 +315,7 @@ export function ConversationCard({
                         {(
                           metrics.usage.prompt_tokens +
                           metrics.usage.completion_tokens
-                        ).toLocaleString()}
+                        )?.toLocaleString()}
                       </span>
                     </div>
 
@@ -335,8 +335,8 @@ export function ConversationCard({
                       </div>
                       <div className="flex justify-end">
                         <span className="text-xs text-neutral-400">
-                          {metrics.usage.per_turn_token.toLocaleString()} /{" "}
-                          {metrics.usage.context_window.toLocaleString()} (
+                          {metrics.usage.per_turn_token?.toLocaleString()} /{" "}
+                          {metrics.usage.context_window?.toLocaleString()} (
                           {(
                             (metrics.usage.per_turn_token /
                               metrics.usage.context_window) *

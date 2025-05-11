@@ -47,7 +47,7 @@ export function ApiKeysManager() {
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "Never";
-    return new Date(dateString).toLocaleString();
+    return new Date(dateString)?.toLocaleString();
   };
 
   return (

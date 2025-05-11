@@ -94,7 +94,7 @@ export const getExtension = (code: string) => {
  * formatTimestamp("2021-10-10T22:10:10.000") // "10/10/2021, 22:10:10"
  */
 export const formatTimestamp = (timestamp: string) =>
-  new Date(timestamp).toLocaleString("en-GB", {
+  new Date(timestamp)?.toLocaleString("en-GB", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
