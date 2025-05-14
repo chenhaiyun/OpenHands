@@ -9,15 +9,15 @@ services:
     environment:
       - SANDBOX_RUNTIME_CONTAINER_IMAGE=${SANDBOX_RUNTIME_CONTAINER_IMAGE:-docker.all-hands.dev/all-hands-ai/runtime:0.38-nikolaik}
       #- SANDBOX_USER_ID=${SANDBOX_USER_ID:-1234} # enable this only if you want a specific non-root sandbox user but you will have to manually adjust permissions of openhands-state for this user
-      - WORKSPACE_MOUNT_PATH=${WORKSPACE_BASE:-$PWD/workspace}
+      - WORKSPACE_MOUNT_PATH=/home/ubuntu/open-hands/shared-workspace
     ports:
       - "3000:3000"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ~/.openhands-state:/.openhands-state
-      - ${WORKSPACE_BASE:-$PWD/workspace}:/opt/workspace_base
+      - /home/ubuntu/open-hands/shared-workspace/.openhands-state:/.openhands-state
+      - /home/ubuntu/open-hands/shared-workspace:/opt/workspace_base
       - ./config.toml:/app/config.toml
     pull_policy: build
     stdin_open: true
