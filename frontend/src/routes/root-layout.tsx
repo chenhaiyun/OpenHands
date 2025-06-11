@@ -7,6 +7,8 @@ import {
   useLocation,
 } from "react-router";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "react-oidc-context";
+import { Loader2 } from "lucide-react";
 import { I18nKey } from "#/i18n/declaration";
 import i18n from "#/i18n";
 import { useGitHubAuthUrl } from "#/hooks/use-github-auth-url";
@@ -68,6 +70,7 @@ export default function MainApp() {
   const { error } = useBalance();
   const { migrateUserConsent } = useMigrateUserConsent();
   const { t } = useTranslation();
+  const auth = useAuth();
 
   const config = useConfig();
   const {
@@ -178,6 +181,12 @@ export default function MainApp() {
     setLoginMethodExists(checkLoginMethodExists());
   }, [isAuthed, checkLoginMethodExists]);
 
+  React.useEffect(() => {
+    if (!auth.isLoading && !auth.isAuthenticated && pathname !== "/signin") {
+      auth.signinRedirect();
+    }
+  }, [auth.isLoading, auth.isAuthenticated, pathname]);
+
   const renderAuthModal =
     !isAuthed &&
     !isAuthError &&
@@ -194,40 +203,60 @@ export default function MainApp() {
     config.data?.APP_MODE === "saas" &&
     loginMethodExists;
 
-  return (
-    <div
-      data-testid="root-layout"
-      className="bg-base p-3 h-screen md:min-w-[1024px] flex flex-col md:flex-row gap-3"
-    >
-      <Sidebar />
-
-      <div
-        id="root-outlet"
-        className="h-[calc(100%-50px)] md:h-full w-full relative overflow-auto"
-      >
-        <EmailVerificationGuard>
-          <Outlet />
-        </EmailVerificationGuard>
+  if (auth.isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-black">
+        <div className="loader text-gray-300">
+          <Loader2 className="w-10 h-10 animate-spin" />
+        </div>
       </div>
+    );
+  }
 
-      {renderAuthModal && (
-        <AuthModal
-          githubAuthUrl={effectiveGitHubAuthUrl}
-          appMode={config.data?.APP_MODE}
-        />
-      )}
-      {renderReAuthModal && <ReauthModal />}
-      {config.data?.APP_MODE === "oss" && consentFormIsOpen && (
-        <AnalyticsConsentFormModal
-          onClose={() => {
-            setConsentFormIsOpen(false);
-          }}
-        />
-      )}
+  if (auth.error) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-black">
+        <div className="loader text-gray-300">Error: {auth.error.message}</div>
+      </div>
+    );
+  }
 
-      {config.data?.FEATURE_FLAGS.ENABLE_BILLING &&
-        config.data?.APP_MODE === "saas" &&
-        settings?.IS_NEW_USER && <SetupPaymentModal />}
-    </div>
-  );
+  if (auth.isAuthenticated) {
+    return (
+      <div
+        data-testid="root-layout"
+        className="bg-base p-3 h-screen md:min-w-[1024px] flex flex-col md:flex-row gap-3"
+      >
+        <Sidebar />
+
+        <div
+          id="root-outlet"
+          className="h-[calc(100%-50px)] md:h-full w-full relative overflow-auto"
+        >
+          <EmailVerificationGuard>
+            <Outlet />
+          </EmailVerificationGuard>
+        </div>
+
+        {renderAuthModal && (
+          <AuthModal
+            githubAuthUrl={effectiveGitHubAuthUrl}
+            appMode={config.data?.APP_MODE}
+          />
+        )}
+        {renderReAuthModal && <ReauthModal />}
+        {config.data?.APP_MODE === "oss" && consentFormIsOpen && (
+          <AnalyticsConsentFormModal
+            onClose={() => {
+              setConsentFormIsOpen(false);
+            }}
+          />
+        )}
+
+        {config.data?.FEATURE_FLAGS.ENABLE_BILLING &&
+          config.data?.APP_MODE === "saas" &&
+          settings?.IS_NEW_USER && <SetupPaymentModal />}
+      </div>
+    );
+  }
 }
