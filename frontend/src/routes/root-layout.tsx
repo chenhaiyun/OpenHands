@@ -7,7 +7,6 @@ import {
   useLocation,
 } from "react-router";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "react-oidc-context";
 import { I18nKey } from "#/i18n/declaration";
 import i18n from "#/i18n";
 import { useGitHubAuthUrl } from "#/hooks/use-github-auth-url";
@@ -26,6 +25,7 @@ import { useIsOnTosPage } from "#/hooks/use-is-on-tos-page";
 import { useAutoLogin } from "#/hooks/use-auto-login";
 import { useAuthCallback } from "#/hooks/use-auth-callback";
 import { LOCAL_STORAGE_KEYS } from "#/utils/local-storage";
+import { EmailVerificationGuard } from "#/components/features/guards/email-verification-guard";
 
 export function ErrorBoundary() {
   const error = useRouteError();
@@ -68,7 +68,6 @@ export default function MainApp() {
   const { error } = useBalance();
   const { migrateUserConsent } = useMigrateUserConsent();
   const { t } = useTranslation();
-  const auth = useAuth();
 
   const config = useConfig();
   const {
@@ -93,12 +92,6 @@ export default function MainApp() {
 
   // Handle authentication callback and set login method after successful authentication
   useAuthCallback();
-
-  React.useEffect(() => {
-    if (!auth.isLoading && !auth.isAuthenticated && pathname !== "/signin") {
-      auth.signinRedirect();
-    }
-  }, [auth.isLoading, auth.isAuthenticated, pathname]);
 
   React.useEffect(() => {
     // Don't change language when on TOS page
@@ -201,52 +194,40 @@ export default function MainApp() {
     config.data?.APP_MODE === "saas" &&
     loginMethodExists;
 
-  if (auth.isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-black">
-        <div className="loader text-gray-300" />
-      </div>
-    );
-  }
+  return (
+    <div
+      data-testid="root-layout"
+      className="bg-base p-3 h-screen md:min-w-[1024px] flex flex-col md:flex-row gap-3"
+    >
+      <Sidebar />
 
-  if (auth.error) {
-    return <div />;
-  }
-
-  if (auth.isAuthenticated) {
-    return (
       <div
-        data-testid="root-layout"
-        className="bg-base p-3 h-screen md:min-w-[1024px] flex flex-col md:flex-row gap-3"
+        id="root-outlet"
+        className="h-[calc(100%-50px)] md:h-full w-full relative overflow-auto"
       >
-        <Sidebar />
-
-        <div
-          id="root-outlet"
-          className="h-[calc(100%-50px)] md:h-full w-full relative overflow-auto"
-        >
+        <EmailVerificationGuard>
           <Outlet />
-        </div>
-
-        {renderAuthModal && (
-          <AuthModal
-            githubAuthUrl={effectiveGitHubAuthUrl}
-            appMode={config.data?.APP_MODE}
-          />
-        )}
-        {renderReAuthModal && <ReauthModal />}
-        {config.data?.APP_MODE === "oss" && consentFormIsOpen && (
-          <AnalyticsConsentFormModal
-            onClose={() => {
-              setConsentFormIsOpen(false);
-            }}
-          />
-        )}
-
-        {config.data?.FEATURE_FLAGS.ENABLE_BILLING &&
-          config.data?.APP_MODE === "saas" &&
-          settings?.IS_NEW_USER && <SetupPaymentModal />}
+        </EmailVerificationGuard>
       </div>
-    );
-  }
+
+      {renderAuthModal && (
+        <AuthModal
+          githubAuthUrl={effectiveGitHubAuthUrl}
+          appMode={config.data?.APP_MODE}
+        />
+      )}
+      {renderReAuthModal && <ReauthModal />}
+      {config.data?.APP_MODE === "oss" && consentFormIsOpen && (
+        <AnalyticsConsentFormModal
+          onClose={() => {
+            setConsentFormIsOpen(false);
+          }}
+        />
+      )}
+
+      {config.data?.FEATURE_FLAGS.ENABLE_BILLING &&
+        config.data?.APP_MODE === "saas" &&
+        settings?.IS_NEW_USER && <SetupPaymentModal />}
+    </div>
+  );
 }
