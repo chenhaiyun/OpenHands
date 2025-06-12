@@ -16,8 +16,8 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /home/ubuntu/open-hands/shared-workspace/.openhands-state:/.openhands-state
-      - /home/ubuntu/open-hands/shared-workspace:/opt/workspace_base
+      - ~/.openhands-state:/.openhands-state
+      - ${WORKSPACE_BASE:-$PWD/workspace}:/opt/workspace_base
       - ./config.toml:/app/config.toml
     pull_policy: build
     stdin_open: true
